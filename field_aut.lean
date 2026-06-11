@@ -167,36 +167,26 @@ variable (F : Type*) [Field F] [Invertible (2 : F)]
 
 
 
-def d1 : Matrix (Fin 3) (Fin 3) (R) :=
-  Matrix.diagonal ![1, -1, -1]
+def d (n : Fin 3) : Matrix (Fin 3) (Fin 3) (R) :=
+  Matrix.diagonal fun x =>
+    if x = n then 1 else -1
 
-def d2 : Matrix (Fin 3) (Fin 3) (R) :=
-  Matrix.diagonal ![-1, 1, -1]
+theorem det_of_dn : ∀ n, (d R n).det = 1 := by
+  intro n
+  dsimp [d]
+  simp
+  rw [Fin.prod_univ_three]
+  fin_cases n <;> simp
 
-def d3 : Matrix (Fin 3) (Fin 3) (R) :=
-  Matrix.diagonal ![-1, -1, 1]
-
-def d1SL : SL3 R :=
-  ⟨d1 R, by
-    simp [d1, Matrix.det_diagonal, Fin.prod_univ_three]
-  ⟩
-
-def d2SL : SL3 R :=
-  ⟨d2 R, by
-    simp [d2, Matrix.det_diagonal, Fin.prod_univ_three]
-  ⟩
-
-def d3SL : SL3 R :=
-  ⟨d3 R, by
-    simp [d3, Matrix.det_diagonal, Fin.prod_univ_three]
-  ⟩
+def dnSL (n : Fin 3): SL3 R :=
+  ⟨d R n, det_of_dn R n⟩
 
 theorem diag_preserved_after_change_of_basis
     (φ : AutSL3 F) :
     ∃ g : GL3 F,
-      innerAutSL3byGL3 F g (φ (d1SL F)) = d1SL F ∧
-      innerAutSL3byGL3 F g (φ (d2SL F)) = d2SL F ∧
-      innerAutSL3byGL3 F g (φ (d3SL F)) = d3SL F := by
+      innerAutSL3byGL3 F g (φ (dnSL F 1)) = dnSL F 1 ∧
+      innerAutSL3byGL3 F g (φ (dnSL F 2)) = dnSL F 2 ∧
+      innerAutSL3byGL3 F g (φ (dnSL F 3)) = dnSL F 3 := by
   sorry
 
 
@@ -223,9 +213,9 @@ def w2SL : SL3 R :=
 theorem w_preserved
     (φ : AutSL3 F) :
     ∃ g : GL3 F,
-      innerAutSL3byGL3 F g (φ (d1SL F)) = d1SL F ∧
-      innerAutSL3byGL3 F g (φ (d2SL F)) = d2SL F ∧
-      innerAutSL3byGL3 F g (φ (d3SL F)) = d3SL F ∧
+      innerAutSL3byGL3 F g (φ (dnSL F 1)) = dnSL F 1 ∧
+      innerAutSL3byGL3 F g (φ (dnSL F 2)) = dnSL F 2 ∧
+      innerAutSL3byGL3 F g (φ (dnSL F 3)) = dnSL F 3 ∧
       innerAutSL3byGL3 F g (φ (w1SL F)) = w1SL F ∧
       innerAutSL3byGL3 F g (φ (w2SL F)) = w2SL F := by
   sorry
@@ -249,9 +239,9 @@ def graphChoiceSL3 (ε : Bool) : AutSL3 R :=
 
 
 theorem x12_preserved (φ : AutSL3 (F)) : ∃ (g : GL3 F) (ε : Bool),
-      graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (d1SL F))) = d1SL F ∧
-      graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (d2SL F))) = d2SL F ∧
-      graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (d3SL F))) = d3SL F ∧
+      graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (dnSL F 1))) = dnSL F 1 ∧
+      graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (dnSL F 2))) = dnSL F 2 ∧
+      graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (dnSL F 3))) = dnSL F 3 ∧
       graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (w1SL F))) = w1SL F ∧
       graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (w2SL F))) = w2SL F ∧
       graphChoiceSL3 F ε (innerAutSL3byGL3 F g (φ (x12SL F))) = x12SL F := by
@@ -265,9 +255,9 @@ def IsTransvectionSL3 (x : SL3 R) : Prop :=
       Matrix.transvection i j c
 
 theorem transv_to_transv_same_coeff (φ : AutSL3 (R)) :
-(φ (d1SL R)  = d1SL R ∧
-φ (d2SL R)  = d2SL R ∧
-φ (d3SL R)  = d3SL R ∧
+(φ (dnSL R 1)  = dnSL R 1 ∧
+φ (dnSL R 2)  = dnSL R 2 ∧
+φ (dnSL R 3)  = dnSL R 3 ∧
 φ (w1SL R) = w1SL R ∧
 φ (w2SL R) = w2SL R ∧
 φ (x12SL R) = x12SL R) → ∃ (f : R ≃+* R), ∀ (E : SL3 R) , (IsTransvectionSL3 R E) → φ E = E.map f:= by sorry
