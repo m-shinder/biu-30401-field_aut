@@ -258,10 +258,10 @@ theorem x12_preserved (φ : AutSL3 (F)) : ∃ (g : GL3 F) (ε : Bool),
   sorry
 
 
-def IsTransvectionSL3 (x : SL3 F) : Prop :=
-  ∃ i j : Fin 3, ∃ c : F,
+def IsTransvectionSL3 (x : SL3 R) : Prop :=
+  ∃ i j : Fin 3, ∃ c : R,
     i ≠ j ∧
-    (x : Matrix (Fin 3) (Fin 3) F) =
+    (x : Matrix (Fin 3) (Fin 3) R) =
       Matrix.transvection i j c
 
 theorem transv_to_transv_same_coeff (φ : AutSL3 (R)) :
