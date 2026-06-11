@@ -2,7 +2,7 @@ name = "SL3-part3"
 version = "0.1.0"
 defaultTargets = ["field_aut"]
 
-[[lean_exe]]
+[[lean_lib]]
 name = "field_aut"
 root = "field_aut"
 
