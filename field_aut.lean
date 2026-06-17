@@ -305,8 +305,8 @@ theorem w_preserved
         have: (w1SL F) * (d1SL F) = (d2SL F) * (w1SL F) := by
           have: (w1 F) * (d1 F) = (d2 F) * (w1 F) := by
             simp only [w1]
-            rw [d1Mat, d2Mat, Matrix.mul_fin_three]
-            simp only [mul_one, mul_zero, add_zero, mul_neg, zero_add,
+            rw [d1Mat, d2Mat]
+            simp only [add_zero, zero_add,
                        neg_zero, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
                        vecMul_cons, head_cons, neg_smul, one_smul, neg_cons,
                        neg_empty, tail_cons, zero_smul, empty_vecMul, empty_mul,
@@ -438,8 +438,8 @@ theorem w_preserved
         have: (w2SL F) * (d3SL F) = (d2SL F) * (w2SL F) := by
           have: (w2 F) * (d3 F) = (d2 F) * (w2 F) := by
             simp only [w2]
-            rw [d3Mat, d2Mat, Matrix.mul_fin_three]
-            simp only [mul_neg, mul_one, mul_zero, add_zero, neg_zero,
+            rw [d3Mat, d2Mat]
+            simp only [add_zero, neg_zero,
                        zero_add, neg_neg, cons_mul, Nat.succ_eq_add_one,
                        Nat.reduceAdd, vecMul_cons, head_cons, neg_smul,
                        one_smul, neg_cons, neg_empty, tail_cons, zero_smul, empty_vecMul,
