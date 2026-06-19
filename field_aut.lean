@@ -149,11 +149,22 @@ def invTransposeAutSL3 : AutSL3 R where
 
 
 
+theorem zero_if_eq_neg {x : R} (h : x = -x) : 0 = x := by
+  -- TODO: make sure group 4 uses those
+  let h := add_eq_zero_iff_eq_neg.mpr h
+  apply Eq.symm
+  rw [← two_mul, mul_eq_zero] at h
+  cases h with
+  | inl h1 =>
+      apply Invertible.ne_zero (2 : R) at h1
+      exfalso
+      exact h1
+  | inr h2 => exact h2
 
-
-
-
-
+theorem zero_if_neg_eq {x : R} (h : -x = x) : 0 = x := by
+  rw [← h]
+  nth_rw 2 [← neg_neg x] at h
+  exact zero_if_eq_neg R h
 
 
 namespace FieldAutomorpisms
@@ -163,22 +174,6 @@ DO NOT CHANGE
 -/
 variable (F : Type*) [Field F] [Invertible (2 : F)]
 
-
-private theorem zero_if_eq_neg {x : F} (h : x = -x) : 0 = x := by
-  let h := add_eq_zero_iff_eq_neg.mpr h
-  apply Eq.symm
-  rw [← two_mul, mul_eq_zero] at h
-  cases h with
-  | inl h1 =>
-      apply Invertible.ne_zero (2 : F) at h1
-      exfalso
-      exact h1
-  | inr h2 => exact h2
-
-private theorem zero_if_neg_eq {x : F} (h : -x = x) : 0 = x := by
-  rw [← h]
-  nth_rw 2 [← neg_neg x] at h
-  exact zero_if_eq_neg F h
 
 
 set_option linter.unusedSectionVars false
