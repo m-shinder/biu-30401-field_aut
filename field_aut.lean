@@ -486,33 +486,29 @@ theorem w_preserved
         have: (!![1, 0, 0; 0, 1, 0; 0, 0, 1] : Matrix (Fin 3) (Fin 3) F) = 1 := by
           ext i j
           fin_cases i <;> fin_cases j <;> rfl
-        rw [this, mul_one]
-        simp only [inv_mul_of_invertible]
+        rw [this, mul_one, inv_mul_of_invertible]
       ⟩
   simp only [innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk, Units.inv_mk]
   split_ands
   · congr
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
     have: g * SpecialLinearGroup.toGL (φ (d1SL F)) * g⁻¹ = d1 F := congrArg Subtype.val hd1
-    rw [this, d1, diagonal_fin_three]
+    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], this, d1, diagonal_fin_three]
     simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
                mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
                mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
                neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
     exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
   · congr
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
     have: g * SpecialLinearGroup.toGL (φ (d2SL F)) * g⁻¹ = d2 F := congrArg Subtype.val hd2
-    rw [this, d2, diagonal_fin_three]
+    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], this, d2, diagonal_fin_three]
     simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
                mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
                mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
                neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
     exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
   · congr
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
     have: g * SpecialLinearGroup.toGL (φ (d3SL F)) * g⁻¹ = d3 F := congrArg Subtype.val hd3
-    rw [this, d3, diagonal_fin_three]
+    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], this, d3, diagonal_fin_three]
     simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
                mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
                mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
