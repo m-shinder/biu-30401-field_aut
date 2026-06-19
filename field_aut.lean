@@ -10,7 +10,7 @@ noncomputable section
 
 abbrev SL3 (A : Type*) [CommRing A] :=
   Matrix.SpecialLinearGroup (Fin 3) A
-  
+
 /-
 DO NOT CHANGE
 -/
@@ -152,12 +152,10 @@ def invTransposeAutSL3 : AutSL3 R where
 
 
 theorem zero_if_eq_neg {x : R} (h : x = -x) : 0 = x := by
-  -- TODO: make sure group 4 uses those
+  -- TODO: make sure group 4 uses it
   rw [← one_mul x, ← invOf_mul_self (2 : R), mul_assoc, two_mul]
   nth_rw 2 [h]
   rw [← sub_eq_add_neg, sub_self, mul_zero]
-
-theorem zero_if_neg_eq {x : R} (h : -x = x) : 0 = x := zero_if_eq_neg R h.symm
 
 namespace FieldAutomorpisms
 
@@ -167,29 +165,14 @@ DO NOT CHANGE
 variable (F : Type*) [Field F] [Invertible (2 : F)]
 
 
-
-set_option linter.unusedSectionVars false
-
 def d1 : Matrix (Fin 3) (Fin 3) (R) :=
   Matrix.diagonal ![1, -1, -1]
-
-private lemma d1Mat: (d1 R) = !![1, 0, 0; 0, -1, 0; 0, 0, -1] := by
-  ext i j
-  fin_cases i <;> fin_cases j <;> rfl
 
 def d2 : Matrix (Fin 3) (Fin 3) (R) :=
   Matrix.diagonal ![-1, 1, -1]
 
-private lemma d2Mat: (d2 R) = !![-1, 0, 0; 0, 1, 0; 0, 0, -1] := by
-  ext i j
-  fin_cases i <;> fin_cases j <;> rfl
-
 def d3 : Matrix (Fin 3) (Fin 3) (R) :=
   Matrix.diagonal ![-1, -1, 1]
-
-private lemma d3Mat: (d3 R) = !![-1, 0, 0; 0, -1, 0; 0, 0, 1] := by
-  ext i j
-  fin_cases i <;> fin_cases j <;> rfl
 
 def d1SL : SL3 R :=
   ⟨d1 R, by
@@ -262,9 +245,9 @@ theorem w_preserved
         have: (d3 F) * v1 * (d3 F) = v1 := by
           have: (d3SL F) * (w1SL F) * (d3SL F) = w1SL F := by
             have: (d3 F) * (w1 F) * (d3 F) = w1 F := by
-              simp only [w1]
-              rw [d3Mat, Matrix.mul_fin_three, Matrix.mul_fin_three]
-              simp only [mul_zero, mul_neg, mul_one, neg_zero, add_zero, neg_neg, zero_add]
+              rw [w1, d3, diagonal_fin_three, mul_fin_three, mul_fin_three]
+              simp only [cons_val, mul_zero, mul_neg, mul_one, neg_zero, add_zero, neg_neg,
+                         zero_add]
             apply Subtype.ext this
           have: (innerAutSL3byGL3 F g (φ ((d3SL F) * (w1SL F) * (d3SL F)))) = innerAutSL3byGL3 F g (φ (w1SL F)) := by
             rw [this]
@@ -272,49 +255,41 @@ theorem w_preserved
           simp only [v1]
           nth_rw 2 [← this]
           exact ext fun i => congrFun rfl
-        rw [d3Mat] at this
+        rw [d3, diagonal_fin_three] at this
         nth_rw 10 [← this]
         have: !![v1 0 0, v1 0 1, v1 0 2;
                  v1 1 0, v1 1 1, v1 1 2;
                  v1 2 0, v1 2 1, v1 2 2] = v1 := by
           ext i j
-          fin_cases i <;> fin_cases j <;> simp
+          fin_cases i <;> fin_cases j <;> rfl
         nth_rw 10 [← this]
         fin_cases i <;> fin_cases j <;> simp
       ext i j
       fin_cases i <;> fin_cases j <;> simp
-      · exact zero_if_neg_eq F (this 0 2)
-      · exact zero_if_neg_eq F (this 1 2)
-      · exact zero_if_neg_eq F (this 2 0)
-      · exact zero_if_neg_eq F (this 2 1)
+      · exact zero_if_eq_neg F (this 0 2).symm
+      · exact zero_if_eq_neg F (this 1 2).symm
+      · exact zero_if_eq_neg F (this 2 0).symm
+      · exact zero_if_eq_neg F (this 2 1).symm
     have: v1 * (d1 F) = (d2 F) * v1 := by
       have: v1 * (d1SL F) = (d2SL F) * v1 := by
         have: (w1SL F) * (d1SL F) = (d2SL F) * (w1SL F) := by
           have: (w1 F) * (d1 F) = (d2 F) * (w1 F) := by
-            simp only [w1]
-            rw [d1Mat, d2Mat]
-            simp only [add_zero, zero_add,
-                       neg_zero, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-                       vecMul_cons, head_cons, neg_smul, one_smul, neg_cons,
-                       neg_empty, tail_cons, zero_smul, empty_vecMul, empty_mul,
-                       Equiv.symm_apply_apply]
+            rw [w1, d1, d2, diagonal_fin_three, diagonal_fin_three]
+            simp only [cons_val, cons_mul, vecMul_cons, head_cons, zero_smul, tail_cons, one_smul,
+                       zero_add, neg_smul, neg_cons, neg_zero, neg_empty, empty_mul]
           apply Subtype.ext this
         have: (innerAutSL3byGL3 F g (φ ((w1SL F) * (d1SL F)))) = innerAutSL3byGL3 F g (φ ((d2SL F) * (w1SL F))) := by
           rw [this]
         rw [map_mul, map_mul, map_mul, map_mul, hd2, hd1] at this
-        simp only [v1]
         rw [← SpecialLinearGroup.coe_mul, this]
         rfl
       exact this
-    rw [d1Mat, d2Mat] at this
-    rw [← first_rep] at this
-    simp only [Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-               vecMul_cons, head_cons, smul_cons, smul_eq_mul,
-               mul_one, mul_zero, smul_empty, tail_cons, mul_neg,
-               zero_smul, empty_vecMul, add_zero, add_cons, zero_add,
-               empty_add_empty, empty_mul, Equiv.symm_apply_apply,
-               neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
-               EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, true_and] at this
+    rw [d1, d2, diagonal_fin_three, diagonal_fin_three, ← first_rep] at this
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+               mul_zero, smul_empty, tail_cons, mul_neg, zero_smul, empty_vecMul, add_zero,
+               add_cons, zero_add, empty_add_empty, empty_mul, neg_smul, one_smul, neg_cons,
+               neg_zero, neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true,
+               true_and] at this
     have second_rep:
           !![0,      v1 0 1, 0;
              v1 1 0, 0,      0;
@@ -323,13 +298,12 @@ theorem w_preserved
       ext i j
       fin_cases i <;> fin_cases j <;> simp
       · exact zero_if_eq_neg F this.left
-      · exact zero_if_neg_eq F this.right
+      · exact zero_if_eq_neg F this.right.symm
     have: v1 * v1 = d3 F := by
       have: (w1SL F) * (w1SL F) = (d3SL F) := by
         have: (w1 F) * (w1 F) = (d3 F) := by
-          simp only [w1]
-          rw [d3Mat, Matrix.mul_fin_three]
-          simp only [mul_zero, mul_neg, mul_one, zero_add, add_zero, neg_zero]
+          rw [w1, d3, diagonal_fin_three, mul_fin_three]
+          simp only [cons_val, mul_zero, mul_neg, mul_one, zero_add, add_zero, neg_zero]
         apply Subtype.ext this
       have: (innerAutSL3byGL3 F g (φ ((w1SL F) * (w1SL F)))) = innerAutSL3byGL3 F g (φ (d3SL F)) := by
         rw [this]
@@ -349,16 +323,13 @@ theorem w_preserved
     have not_zero_v101: IsUnit (v1 0 1) := by
       apply IsUnit.mk0
       by_contra
-      rw [← second_rep, this, Matrix.det_fin_three] at det_v1
-      simp only [Fin.isValue, of_apply, cons_val', cons_val_zero,
-                 cons_val_fin_one, cons_val_one, mul_zero, cons_val,
-                 zero_mul, sub_self, add_zero, zero_ne_one] at det_v1
-    rw [← second_rep, d3Mat] at this
-    simp only [Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-               vecMul_cons, head_cons, zero_smul, tail_cons,
-               smul_cons, smul_eq_mul, mul_zero, smul_empty,
-               empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply,
-               EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, true_and] at this
+      rw [← second_rep, this, det_fin_three] at det_v1
+      simp only [of_apply, cons_val, zero_mul, sub_self, add_zero, zero_ne_one] at det_v1
+    rw [← second_rep, d3, diagonal_fin_three] at this
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, zero_smul, tail_cons, smul_cons,
+               smul_eq_mul, mul_zero, smul_empty, empty_vecMul, add_zero, zero_add,
+               Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true,
+               true_and] at this
     have third_rep:
           !![0,           v1 0 1, 0;
              -(v1 0 1)⁻¹, 0,      0;
@@ -366,10 +337,8 @@ theorem w_preserved
       nth_rw 3 [← second_rep]
       have det_calc: 1 = -((v1 0 1) * (v1 1 0)) * (v1 2 2) := by
         nth_rw 1 [← det_v1, ← second_rep]
-        rw [Matrix.det_fin_three]
-        simp only [Fin.isValue, of_apply, cons_val', cons_val_zero,
-                   cons_val_fin_one, cons_val_one, mul_zero, cons_val,
-                   zero_mul, sub_self, zero_sub, add_zero, sub_zero, neg_mul]
+        rw [det_fin_three]
+        simp only [of_apply, mul_zero, cons_val, zero_mul, zero_sub, add_zero, sub_zero, neg_mul]
       ext i j
       fin_cases i <;> fin_cases j <;> simp
       · rw [neg_eq_neg_one_mul, ← this.right.left, mul_assoc, not_zero_v101.mul_inv_cancel, mul_one]
@@ -394,43 +363,40 @@ theorem w_preserved
         have: (d1 F) * v2 * (d1 F) = v2 := by
           have: (d1SL F) * (w2SL F) * (d1SL F) = w2SL F := by
             have: (d1 F) * (w2 F) * (d1 F) = w2 F := by
-              simp only [w2]
-              rw [d1Mat, Matrix.mul_fin_three, Matrix.mul_fin_three]
-              simp only [mul_one, mul_zero, add_zero, mul_neg, neg_zero, zero_add, neg_neg]
+              rw [w2, d1, diagonal_fin_three, mul_fin_three, mul_fin_three]
+              simp only [cons_val, mul_one, mul_zero, add_zero, mul_neg, neg_zero, zero_add,
+                         neg_neg]
             apply Subtype.ext this
           have: (innerAutSL3byGL3 F g (φ ((d1SL F) * (w2SL F) * (d1SL F)))) = innerAutSL3byGL3 F g (φ (w2SL F)) := by
             rw [this]
           rw [map_mul, map_mul, map_mul, map_mul, hd1] at this
           simp only [v2]
           nth_rw 2 [← this]
-          simp only [SpecialLinearGroup.coe_mul]
+          -- simp only [SpecialLinearGroup.coe_mul]
           rfl
-        rw [d1Mat] at this
+        rw [d1, diagonal_fin_three] at this
+        -- simp only [cons_val] at this
         nth_rw 10 [← this]
         have: !![v2 0 0, v2 0 1, v2 0 2;
                  v2 1 0, v2 1 1, v2 1 2;
                  v2 2 0, v2 2 1, v2 2 2] = v2 := by
           ext i j
-          fin_cases i <;> fin_cases j <;> simp
+          fin_cases i <;> fin_cases j <;> rfl
         nth_rw 10 [← this]
         fin_cases i <;> fin_cases j <;> simp
       ext i j
       fin_cases i <;> fin_cases j <;> simp
-      · exact zero_if_neg_eq F (this 0 1)
-      · exact zero_if_neg_eq F (this 0 2)
-      · exact zero_if_neg_eq F (this 1 0)
-      · exact zero_if_neg_eq F (this 2 0)
+      · exact zero_if_eq_neg F (this 0 1).symm
+      · exact zero_if_eq_neg F (this 0 2).symm
+      · exact zero_if_eq_neg F (this 1 0).symm
+      · exact zero_if_eq_neg F (this 2 0).symm
     have: v2 * (d3 F) = (d2 F) * v2 := by
       have: v2 * (d3SL F) = (d2SL F) * v2 := by
         have: (w2SL F) * (d3SL F) = (d2SL F) * (w2SL F) := by
           have: (w2 F) * (d3 F) = (d2 F) * (w2 F) := by
-            simp only [w2]
-            rw [d3Mat, d2Mat]
-            simp only [add_zero, neg_zero,
-                       zero_add, neg_neg, cons_mul, Nat.succ_eq_add_one,
-                       Nat.reduceAdd, vecMul_cons, head_cons, neg_smul,
-                       one_smul, neg_cons, neg_empty, tail_cons, zero_smul, empty_vecMul,
-                       empty_mul, Equiv.symm_apply_apply]
+            rw [w2, d3, d2, diagonal_fin_three, diagonal_fin_three]
+            simp only [cons_val, neg_zero, zero_add, cons_mul, vecMul_cons, head_cons, neg_smul,
+                       one_smul, neg_cons, neg_empty, tail_cons, zero_smul, empty_mul]
           apply Subtype.ext this
         have: (innerAutSL3byGL3 F g (φ ((w2SL F) * (d3SL F)))) = innerAutSL3byGL3 F g (φ ((d2SL F) * (w2SL F))) := by
           rw [this]
@@ -439,15 +405,12 @@ theorem w_preserved
         rw [← SpecialLinearGroup.coe_mul, this]
         rfl
       exact this
-    rw [d3Mat, d2Mat] at this
-    rw [← first_rep] at this
-    simp only [Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-               vecMul_cons, head_cons, smul_cons, smul_eq_mul,
-               mul_neg, mul_one, mul_zero, smul_empty, tail_cons,
-               zero_smul, empty_vecMul, add_zero, add_cons, zero_add,
-               empty_add_empty, empty_mul, Equiv.symm_apply_apply,
-               neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
-               EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, true_and] at this
+    rw [d3, d2, diagonal_fin_three, diagonal_fin_three, ← first_rep] at this
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul,
+               mul_neg, mul_one, mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul,
+               add_zero, add_cons, zero_add, empty_add_empty, empty_mul, neg_smul, one_smul,
+               neg_cons, neg_zero, neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj,
+               and_true, true_and] at this
     have second_rep:
           !![v2 0 0, 0,      0;
              0,      0, v2 1 2;
@@ -455,14 +418,13 @@ theorem w_preserved
       nth_rw 4 [← first_rep]
       ext i j
       fin_cases i <;> fin_cases j <;> simp
-      · exact zero_if_neg_eq F this.left
+      · exact zero_if_eq_neg F this.left.symm
       · exact zero_if_eq_neg F this.right
     have: v2 * v2 = d1 F := by
       have: (w2SL F) * (w2SL F) = (d1SL F) := by
         have: (w2 F) * (w2 F) = (d1 F) := by
-          simp only [w2]
-          rw [d1Mat, Matrix.mul_fin_three]
-          simp only [mul_one, mul_zero, add_zero, mul_neg, neg_zero, zero_add]
+          rw [w2, d1, diagonal_fin_three, mul_fin_three]
+          simp only [cons_val, mul_zero, mul_neg, mul_one, zero_add, add_zero, neg_zero]
         apply Subtype.ext this
       have: (innerAutSL3byGL3 F g (φ ((w2SL F) * (w2SL F)))) = innerAutSL3byGL3 F g (φ (d1SL F)) := by
         rw [this]
@@ -475,16 +437,14 @@ theorem w_preserved
     have not_zero_v212: IsUnit (v2 1 2) := by
       apply IsUnit.mk0
       by_contra
-      rw [← second_rep, this, Matrix.det_fin_three] at det_v2
-      simp only [Fin.isValue, of_apply, cons_val', cons_val_zero,
-                 cons_val_fin_one, cons_val_one, mul_zero, cons_val,
-                 zero_mul, sub_self, add_zero, zero_ne_one] at det_v2
-    rw [← second_rep, d1Mat] at this
-    simp only [Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-               vecMul_cons, head_cons, smul_cons, smul_eq_mul,
-               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul,
-               add_zero, zero_add, empty_mul, Equiv.symm_apply_apply,
-               EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, true_and] at this
+      rw [← second_rep, this, det_fin_three] at det_v2
+      simp only [of_apply, cons_val', mul_zero, cons_val, zero_mul, sub_self, add_zero,
+                 zero_ne_one] at det_v2
+    rw [← second_rep, d1, diagonal_fin_three] at this
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_zero,
+               smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add, empty_mul,
+               Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true,
+               true_and] at this
     have third_rep:
           !![1, 0,           0;
              0, 0,           v2 1 2;
@@ -494,10 +454,8 @@ theorem w_preserved
       fin_cases i <;> fin_cases j <;> simp
       have det_calc: 1 = - (v2 0 0) * (v2 1 2) * (v2 2 1) := by
         nth_rw 1 [← det_v2, ← second_rep]
-        rw [Matrix.det_fin_three]
-        simp only [Fin.isValue, of_apply, cons_val', cons_val_zero,
-                   cons_val_fin_one, cons_val_one, mul_zero, cons_val,
-                   zero_sub, sub_zero, zero_mul, add_zero, neg_mul]
+        rw [det_fin_three]
+        simp only [of_apply, mul_zero, cons_val, zero_mul, zero_sub, add_zero, sub_zero, neg_mul]
       · rw [mul_assoc, this.right.left, neg_mul_neg, mul_one] at det_calc
         exact det_calc
       · rw [neg_eq_neg_one_mul, ← this.right.right, mul_assoc, not_zero_v212.mul_inv_cancel, mul_one]
@@ -513,25 +471,21 @@ theorem w_preserved
                 0,   1, 0;
                 0,   0, l2⁻¹],
       by
-        simp only [cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-                   empty_mul, Equiv.symm_apply_apply, coe_units_inv,
-                   vecMul_vecMul, mul_inv_cancel_left_of_invertible,
-                   vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_zero,
-                   smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, one_smul, zero_add]
+        simp only [cons_mul, Equiv.symm_apply_apply, coe_units_inv, vecMul_vecMul,
+                   mul_inv_cancel_left_of_invertible, vecMul_cons, head_cons, smul_cons,
+                   smul_eq_mul, tail_cons]
         rw [l1unit.inv_mul_cancel, l2unit.mul_inv_cancel]
         ext i j
         fin_cases i <;> fin_cases j <;> simp,
       by
         rw [← mul_assoc, mul_assoc _ !![l1, 0, 0; 0, 1, 0; 0, 0, l2⁻¹]]
-        simp only [coe_units_inv, cons_mul, Nat.succ_eq_add_one,
-                   Nat.reduceAdd, vecMul_cons, head_cons, smul_cons,
-                   smul_eq_mul, mul_zero, smul_empty, tail_cons,
-                   zero_smul, empty_vecMul, add_zero, one_smul, zero_add, empty_mul,
-                   Equiv.symm_apply_apply]
+        simp only [coe_units_inv, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul,
+                   mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, one_smul,
+                   zero_add, empty_mul, Equiv.symm_apply_apply]
         rw [l1unit.mul_inv_cancel, l2unit.inv_mul_cancel]
         have: (!![1, 0, 0; 0, 1, 0; 0, 0, 1] : Matrix (Fin 3) (Fin 3) F) = 1 := by
           ext i j
-          fin_cases i <;> fin_cases j <;> simp
+          fin_cases i <;> fin_cases j <;> rfl
         rw [this, mul_one]
         simp only [inv_mul_of_invertible]
       ⟩
@@ -540,44 +494,33 @@ theorem w_preserved
   · congr
     rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
     have: g * SpecialLinearGroup.toGL (φ (d1SL F)) * g⁻¹ = d1 F := congrArg Subtype.val hd1
-    rw [this, d1Mat]
-    simp only [cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, vecMul_cons,
-               head_cons, smul_cons, smul_eq_mul, mul_one,
-               mul_zero, smul_empty, tail_cons, zero_smul,empty_vecMul,
-               add_zero, one_smul, zero_add, mul_neg, empty_mul,
-               Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
-               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj,
-               and_true, neg_inj, true_and]
+    rw [this, d1, diagonal_fin_three]
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
+               mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
+               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
     exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
   · congr
     rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
     have: g * SpecialLinearGroup.toGL (φ (d2SL F)) * g⁻¹ = d2 F := congrArg Subtype.val hd2
-    rw [this, d2Mat]
-    simp only [cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, vecMul_cons,
-               head_cons, smul_cons, smul_eq_mul, mul_one,
-               mul_zero, smul_empty, tail_cons, zero_smul,empty_vecMul,
-               add_zero, one_smul, zero_add, mul_neg, empty_mul,
-               Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
-               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj,
-               and_true, neg_inj, true_and]
+    rw [this, d2, diagonal_fin_three]
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
+               mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
+               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
     exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
   · congr
     rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
     have: g * SpecialLinearGroup.toGL (φ (d3SL F)) * g⁻¹ = d3 F := congrArg Subtype.val hd3
-    rw [this, d3Mat]
-    simp only [cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, vecMul_cons,
-               head_cons, smul_cons, smul_eq_mul, mul_one,
-               mul_zero, smul_empty, tail_cons, zero_smul,empty_vecMul,
-               add_zero, one_smul, zero_add, mul_neg, empty_mul,
-               Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
-               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj,
-               and_true, neg_inj, true_and]
+    rw [this, d3, diagonal_fin_three]
+    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
+               mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
+               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
     exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
   · congr
     simp only [v1, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl1
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
-    rw [hl1]
-    simp only [w1]
+    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl1, w1]
     ext i j
     fin_cases i <;> fin_cases j <;> simp
     · rw [l1unit.inv_mul_cancel]
@@ -585,9 +528,7 @@ theorem w_preserved
     · rw [l2unit.mul_inv_cancel]
   · congr
     simp only [v2, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl2
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2]]
-    rw [hl2]
-    simp only [w2]
+    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl2, w2]
     ext i j
     fin_cases i <;> fin_cases j <;> simp
     · rw [l1unit.inv_mul_cancel]
