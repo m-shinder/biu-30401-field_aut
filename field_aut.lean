@@ -465,20 +465,12 @@ theorem w_preserved
       by
         rw [mul_assoc, ← mul_assoc _ _ !![l1, 0, 0; 0, 1, 0; 0, 0, l2⁻¹], g.mul_inv, one_mul,
             mul_fin_three, l1unit.inv_mul_cancel, l2unit.mul_inv_cancel]
-        repeat rw [zero_mul]
-        repeat rw [add_zero]
-        repeat rw [mul_zero]
-        repeat rw [add_zero]
-        repeat rw [zero_add]
+        simp only [zero_mul, add_zero, mul_zero, zero_add]
         rw [mul_one, one_fin_three],
       by
         rw [← mul_assoc, mul_assoc _ !![l1, 0, 0; 0, 1, 0; 0, 0, l2⁻¹], mul_fin_three,
             l1unit.mul_inv_cancel, l2unit.inv_mul_cancel]
-        repeat rw [zero_mul]
-        repeat rw [add_zero]
-        repeat rw [mul_zero]
-        repeat rw [add_zero]
-        repeat rw [zero_add]
+        simp only [zero_mul, add_zero, mul_zero, zero_add]
         rw [mul_one, ← one_fin_three, mul_one, g.inv_mul]
       ⟩
   simp only [innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk, Units.inv_mk]
@@ -522,12 +514,7 @@ theorem w_preserved
       simp only [v1, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl1
       rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
           mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl1, w1, mul_fin_three, mul_fin_three]
-      repeat rw [zero_mul]
-      repeat rw [add_zero]
-      repeat rw [mul_zero]
-      repeat rw [add_zero]
-      repeat rw [zero_add]
-      repeat rw [zero_mul]
+      simp only [zero_mul, add_zero, mul_zero, zero_add]
       rw [mul_one, mul_one, one_mul, neg_eq_neg_one_mul, mul_assoc, l2unit.mul_inv_cancel,
           l1unit.inv_mul_cancel, mul_one],
     by
@@ -535,12 +522,7 @@ theorem w_preserved
       simp only [v2, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl2
       rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
           mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl2, w2, mul_fin_three, mul_fin_three]
-      repeat rw [zero_mul]
-      repeat rw [add_zero]
-      repeat rw [mul_zero]
-      repeat rw [add_zero]
-      repeat rw [zero_add]
-      repeat rw [zero_mul]
+      simp only [zero_mul, add_zero, mul_zero, zero_add]
       rw [mul_one, mul_one, one_mul, neg_eq_neg_one_mul, ← mul_assoc, mul_comm _ (-1), mul_assoc,
           l2unit.mul_inv_cancel, l1unit.inv_mul_cancel, mul_one]
   ⟩
