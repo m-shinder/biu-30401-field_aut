@@ -335,9 +335,7 @@ theorem w_preserved
           simp only [of_apply, mul_zero, cons_val, zero_mul, zero_sub, add_zero, sub_zero, neg_mul]
         rw [this.left, neg_neg, one_mul] at det_calc
         exact det_calc
-    split_ands
-    · exact not_zero_v101
-    · rw [third_rep]
+    exact ⟨ not_zero_v101, third_rep.symm ⟩
   have hv2: ∃ l : F, IsUnit l ∧ v2 =
     !![1, 0,    0;
        0, 0,    l;
@@ -445,9 +443,7 @@ theorem w_preserved
         exact det_calc
       · rw [neg_eq_neg_one_mul, ← this.right.right, mul_assoc, not_zero_v212.mul_inv_cancel,
             mul_one]
-    split_ands
-    · exact not_zero_v212
-    · rw [third_rep]
+    exact ⟨ not_zero_v212, third_rep.symm ⟩
   rcases hv1 with ⟨l1, l1unit, hl1⟩
   rcases hv2 with ⟨l2, l2unit, hl2⟩
   use ⟨!![l1⁻¹, 0, 0;
@@ -472,52 +468,62 @@ theorem w_preserved
             inv_mul_of_invertible]
       ⟩
   simp only [innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk, Units.inv_mk]
-  split_ands
-  · congr
-    have: g * SpecialLinearGroup.toGL (φ (d1SL F)) * g⁻¹ = d1 F := congrArg Subtype.val hd1
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-        mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], this, d1, diagonal_fin_three]
-    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
-               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
-               mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
-               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
-    exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
-  · congr
-    have: g * SpecialLinearGroup.toGL (φ (d2SL F)) * g⁻¹ = d2 F := congrArg Subtype.val hd2
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-        mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], this, d2, diagonal_fin_three]
-    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
-               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
-               mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
-               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
-    exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
-  · congr
-    have: g * SpecialLinearGroup.toGL (φ (d3SL F)) * g⁻¹ = d3 F := congrArg Subtype.val hd3
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-        mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], this, d3, diagonal_fin_three]
-    simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
-               mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
-               mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
-               neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
-    exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩
-  · congr
-    simp only [v1, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl1
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-        mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl1, w1]
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp
-    · rw [l1unit.inv_mul_cancel]
-    · rw [l1unit.inv_mul_cancel]
-    · rw [l2unit.mul_inv_cancel]
-  · congr
-    simp only [v2, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl2
-    rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-        mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl2, w2]
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp
-    · rw [l1unit.inv_mul_cancel]
-    · rw [l2unit.mul_inv_cancel]
-    · rw [l2unit.mul_inv_cancel]
+  have diag_preserved:
+    g * SpecialLinearGroup.toGL (φ (d1SL F)) * g⁻¹ = d1 F ∧
+    g * SpecialLinearGroup.toGL (φ (d2SL F)) * g⁻¹ = d2 F ∧
+    g * SpecialLinearGroup.toGL (φ (d3SL F)) * g⁻¹ = d3 F :=
+      ⟨ congrArg Subtype.val hd1, congrArg Subtype.val hd2, congrArg Subtype.val hd3 ⟩
+  exact ⟨
+    by
+      congr
+      rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], diag_preserved.left, d1, diagonal_fin_three]
+      simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+                mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
+                mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
+                neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
+      exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩,
+    by
+      congr
+      rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], diag_preserved.right.left, d2,
+          diagonal_fin_three]
+      simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+                mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
+                mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
+                neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
+      exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩,
+    by
+      congr
+      rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], diag_preserved.right.right, d3,
+          diagonal_fin_three]
+      simp only [cons_val, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, mul_one,
+                mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, zero_add,
+                mul_neg, empty_mul, Equiv.symm_apply_apply, neg_smul, neg_cons, neg_zero,
+                neg_empty, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true, neg_inj, true_and]
+      exact ⟨ l1unit.inv_mul_cancel, l2unit.mul_inv_cancel ⟩,
+    by
+      congr
+      simp only [v1, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl1
+      rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl1, w1]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp
+      · rw [l1unit.inv_mul_cancel]
+      · rw [l1unit.inv_mul_cancel]
+      · rw [l2unit.mul_inv_cancel],
+    by
+      congr
+      simp only [v2, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl2
+      rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl2, w2]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp
+      · rw [l1unit.inv_mul_cancel]
+      · rw [l2unit.mul_inv_cancel]
+      · rw [l2unit.mul_inv_cancel]
+  ⟩
 
 
 def x12 : Matrix (Fin 3) (Fin 3) (R) :=
