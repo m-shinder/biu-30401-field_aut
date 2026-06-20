@@ -258,9 +258,14 @@ theorem w_preserved
           exact ext fun i => congrFun rfl
         rw [d3, diagonal_fin_three] at this
         nth_rw 10 [← this, eta_fin_three v1]
-        fin_cases i <;> fin_cases j <;> simp
+        fin_cases i <;> fin_cases j <;> simp only [cons_val, cons_mul, vecMul_cons, head_cons,
+                                                   one_smul, tail_cons, zero_smul, empty_vecMul,
+                                                   add_zero, neg_smul, neg_cons, zero_add,
+                                                   empty_mul, Equiv.symm_apply_apply, smul_cons,
+                                                   smul_eq_mul, mul_one, mul_zero, mul_neg,
+                                                   add_cons, empty_add_empty, neg_zero, neg_neg]
       ext i j
-      fin_cases i <;> fin_cases j <;> simp
+      fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · exact zero_if_eq_neg F (this 0 2).symm
       · exact zero_if_eq_neg F (this 1 2).symm
       · exact zero_if_eq_neg F (this 2 0).symm
@@ -292,7 +297,7 @@ theorem w_preserved
                 true_and] at this
       nth_rw 4 [← first_rep]
       ext i j
-      fin_cases i <;> fin_cases j <;> simp
+      fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · exact zero_if_eq_neg F this.left
       · exact zero_if_eq_neg F this.right.symm
     have det_v1: det v1 = 1 := by
@@ -326,7 +331,7 @@ theorem w_preserved
                  Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true,
                  true_and] at this
       ext i j
-      fin_cases i <;> fin_cases j <;> simp
+      fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · rw [neg_eq_neg_one_mul, ← this.right.left, mul_assoc, not_zero_v101.mul_inv_cancel,
             mul_one]
       · have det_calc: 1 = -((v1 0 1) * (v1 1 0)) * (v1 2 2) := by
@@ -365,9 +370,14 @@ theorem w_preserved
           rfl
         rw [d1, diagonal_fin_three] at this
         nth_rw 10 [← this, eta_fin_three v2]
-        fin_cases i <;> fin_cases j <;> simp
+        fin_cases i <;> fin_cases j <;> simp only [cons_val, cons_mul, vecMul_cons, head_cons,
+                                                   one_smul, tail_cons, zero_smul, empty_vecMul,
+                                                   add_zero, neg_smul, neg_cons, zero_add,
+                                                   empty_mul, Equiv.symm_apply_apply, smul_cons,
+                                                   smul_eq_mul, mul_one, mul_zero, mul_neg,
+                                                   add_cons, empty_add_empty, neg_zero, neg_neg]
       ext i j
-      fin_cases i <;> fin_cases j <;> simp
+      fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · exact zero_if_eq_neg F (this 0 1).symm
       · exact zero_if_eq_neg F (this 0 2).symm
       · exact zero_if_eq_neg F (this 1 0).symm
@@ -399,7 +409,7 @@ theorem w_preserved
                 and_true, true_and] at this
       nth_rw 4 [← first_rep]
       ext i j
-      fin_cases i <;> fin_cases j <;> simp
+      fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · exact zero_if_eq_neg F this.left.symm
       · exact zero_if_eq_neg F this.right
     have det_v2: det v2 = 1 := by
@@ -434,7 +444,7 @@ theorem w_preserved
                 Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq, vecCons_inj, and_true,
                 true_and] at this
       ext i j
-      fin_cases i <;> fin_cases j <;> simp
+      fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · have det_calc: 1 = - (v2 0 0) * (v2 1 2) * (v2 2 1) := by
           nth_rw 1 [← det_v2, ← second_rep]
           rw [det_fin_three]
@@ -453,19 +463,23 @@ theorem w_preserved
                 0,   1, 0;
                 0,   0, l2⁻¹],
       by
-        simp only [cons_mul, Equiv.symm_apply_apply, coe_units_inv, vecMul_vecMul,
-                   mul_inv_cancel_left_of_invertible, vecMul_cons, head_cons, smul_cons,
-                   smul_eq_mul, tail_cons]
-        rw [l1unit.inv_mul_cancel, l2unit.mul_inv_cancel]
-        ext i j
-        fin_cases i <;> fin_cases j <;> simp,
+        rw [mul_assoc, ← mul_assoc _ _ !![l1, 0, 0; 0, 1, 0; 0, 0, l2⁻¹], g.mul_inv, one_mul,
+            mul_fin_three, l1unit.inv_mul_cancel, l2unit.mul_inv_cancel]
+        repeat rw [zero_mul]
+        repeat rw [add_zero]
+        repeat rw [mul_zero]
+        repeat rw [add_zero]
+        repeat rw [zero_add]
+        rw [mul_one, one_fin_three],
       by
-        rw [← mul_assoc, mul_assoc _ !![l1, 0, 0; 0, 1, 0; 0, 0, l2⁻¹]]
-        simp only [coe_units_inv, cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul,
-                   mul_zero, smul_empty, tail_cons, zero_smul, empty_vecMul, add_zero, one_smul,
-                   zero_add, empty_mul, Equiv.symm_apply_apply]
-        rw [l1unit.mul_inv_cancel, l2unit.inv_mul_cancel, ← one_fin_three, mul_one,
-            inv_mul_of_invertible]
+        rw [← mul_assoc, mul_assoc _ !![l1, 0, 0; 0, 1, 0; 0, 0, l2⁻¹], mul_fin_three,
+            l1unit.mul_inv_cancel, l2unit.inv_mul_cancel]
+        repeat rw [zero_mul]
+        repeat rw [add_zero]
+        repeat rw [mul_zero]
+        repeat rw [add_zero]
+        repeat rw [zero_add]
+        rw [mul_one, ← one_fin_three, mul_one, g.inv_mul]
       ⟩
   simp only [innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk, Units.inv_mk]
   have diag_preserved:
@@ -507,22 +521,28 @@ theorem w_preserved
       congr
       simp only [v1, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl1
       rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl1, w1]
-      ext i j
-      fin_cases i <;> fin_cases j <;> simp
-      · rw [l1unit.inv_mul_cancel]
-      · rw [l1unit.inv_mul_cancel]
-      · rw [l2unit.mul_inv_cancel],
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl1, w1, mul_fin_three, mul_fin_three]
+      repeat rw [zero_mul]
+      repeat rw [add_zero]
+      repeat rw [mul_zero]
+      repeat rw [add_zero]
+      repeat rw [zero_add]
+      repeat rw [zero_mul]
+      rw [mul_one, mul_one, one_mul, neg_eq_neg_one_mul, mul_assoc, l2unit.mul_inv_cancel,
+          l1unit.inv_mul_cancel, mul_one],
     by
       congr
       simp only [v2, innerAutSL3byGL3, MulEquiv.coe_mk, Equiv.coe_fn_mk] at hl2
       rw [← mul_assoc, mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2],
-          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl2, w2]
-      ext i j
-      fin_cases i <;> fin_cases j <;> simp
-      · rw [l1unit.inv_mul_cancel]
-      · rw [l2unit.mul_inv_cancel]
-      · rw [l2unit.mul_inv_cancel]
+          mul_assoc !![l1⁻¹, 0, 0; 0, 1, 0; 0, 0, l2], hl2, w2, mul_fin_three, mul_fin_three]
+      repeat rw [zero_mul]
+      repeat rw [add_zero]
+      repeat rw [mul_zero]
+      repeat rw [add_zero]
+      repeat rw [zero_add]
+      repeat rw [zero_mul]
+      rw [mul_one, mul_one, one_mul, neg_eq_neg_one_mul, ← mul_assoc, mul_comm _ (-1), mul_assoc,
+          l2unit.mul_inv_cancel, l1unit.inv_mul_cancel, mul_one]
   ⟩
 
 
