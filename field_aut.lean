@@ -258,12 +258,10 @@ theorem w_preserved
           exact ext fun i => congrFun rfl
         rw [d3, diagonal_fin_three] at this
         nth_rw 10 [← this, eta_fin_three v1]
-        fin_cases i <;> fin_cases j <;> simp only [cons_val, cons_mul, vecMul_cons, head_cons,
-                                                   one_smul, tail_cons, zero_smul, empty_vecMul,
-                                                   add_zero, neg_smul, neg_cons, zero_add,
-                                                   empty_mul, Equiv.symm_apply_apply, smul_cons,
-                                                   smul_eq_mul, mul_one, mul_zero, mul_neg,
-                                                   add_cons, empty_add_empty, neg_zero, neg_neg]
+        simp only [cons_val, cons_mul, vecMul_cons, head_cons, one_smul, tail_cons, zero_smul,
+                   empty_vecMul, add_zero, neg_smul, neg_cons, zero_add, empty_mul,
+                   Equiv.symm_apply_apply, smul_cons, smul_eq_mul, mul_one, mul_zero, mul_neg,
+                   add_cons, empty_add_empty, neg_zero, neg_neg]
       ext i j
       fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · exact zero_if_eq_neg F (this 0 2).symm
@@ -370,12 +368,10 @@ theorem w_preserved
           rfl
         rw [d1, diagonal_fin_three] at this
         nth_rw 10 [← this, eta_fin_three v2]
-        fin_cases i <;> fin_cases j <;> simp only [cons_val, cons_mul, vecMul_cons, head_cons,
-                                                   one_smul, tail_cons, zero_smul, empty_vecMul,
-                                                   add_zero, neg_smul, neg_cons, zero_add,
-                                                   empty_mul, Equiv.symm_apply_apply, smul_cons,
-                                                   smul_eq_mul, mul_one, mul_zero, mul_neg,
-                                                   add_cons, empty_add_empty, neg_zero, neg_neg]
+        simp only [cons_val, cons_mul, vecMul_cons, head_cons, one_smul, tail_cons, zero_smul,
+                   empty_vecMul, add_zero, neg_smul, neg_cons, zero_add, empty_mul,
+                   Equiv.symm_apply_apply, smul_cons, smul_eq_mul, mul_one, mul_zero, mul_neg,
+                   add_cons, empty_add_empty, neg_zero, neg_neg]
       ext i j
       fin_cases i <;> fin_cases j <;> simp only [Fin.reduceFinMk, of_apply, cons_val]
       · exact zero_if_eq_neg F (this 0 1).symm
