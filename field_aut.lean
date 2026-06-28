@@ -160,7 +160,7 @@ theorem zero_if_eq_neg {x : R} (h : x = -x) : 0 = x := by
   nth_rw 2 [h]
   rw [← sub_eq_add_neg, sub_self, mul_zero]
 
-namespace FieldAutomorpisms
+namespace FieldAutomorphisms
 
 /-
 DO NOT CHANGE
@@ -1335,4 +1335,4 @@ theorem field_class
              := by
   sorry
 
-end FieldAutomorpisms
+end FieldAutomorphisms
